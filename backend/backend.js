@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
@@ -6,12 +8,11 @@ const path = require('path');
 const { UserModel , TodoModel } = require('./db')
 const {auth , JWT_SECRET} = require("./auth");
 
-const PORT = 3000;
 const app = express();
 app.use(express.json());
 
 // Connecting to MongoDB Database!
-mongoose.connect("mongodb+srv://shubhashish:3xagFSuuywuVj67F@cluster0.sqhio.mongodb.net/todo-app-test");
+mongoose.connect(process.env.MONGO_URL);
 
 app.get('/' , (req , res) => {
     res.sendFile(path.join(__dirname, "../frontend/frontend.html"));
@@ -127,4 +128,4 @@ app.post('/show-todo', auth , async (req , res) => {
     // }
 
 })
-app.listen(PORT);
+app.listen(process.env.PORT);
