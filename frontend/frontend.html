@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo Fullstack Application || Shubhashish Chakraborty</title>
-    <!-- <link rel="stylesheet" href="style.css"> -->
     <style>
         body {
             background-color: #1B1833;
@@ -87,15 +86,18 @@
             </div>
 
             <div id="response-section"></div>
-
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.8/axios.min.js"></script>
     <script>
+        // Set base URL dynamically for production
+        const BASE_URL = window.location.origin;
+
         document.getElementById("todo-section").style.display = "none";
+
         async function signup() {
-            const response = await axios.post("http://localhost:3000/signup", {
+            const response = await axios.post(`${BASE_URL}/signup`, {
                 username: document.getElementById("signup-username").value,
                 email: document.getElementById("signup-email").value,
                 password: document.getElementById("signup-password").value
@@ -105,20 +107,17 @@
         }
 
         async function login() {
-            const response = await axios.post("http://localhost:3000/signin", {
+            const response = await axios.post(`${BASE_URL}/signin`, {
                 email: document.getElementById("signin-email").value,
                 password: document.getElementById("signin-password").value
-            })
+            });
 
             localStorage.setItem('token', response.data.token);
             document.getElementById("response-section").innerHTML = `<h2>${response.data.msg}</h2>`;
 
-            document.getElementById("signup-section").style.display = "none"; // hiding the SIgnup Section When User is logged in!!
+            document.getElementById("signup-section").style.display = "none";
 
             document.getElementById('todo-section').style.display = "block";
-
-            document.getElementById('todo-user').style.backgroundColor = "black"
-            document.getElementById('todo-user').style.textAlign = "center"
             document.getElementById('todo-user').innerHTML = `Todo App || User: ${response.data.username}`;
         }
 
@@ -126,9 +125,9 @@
             const doneValue = document.getElementById('todo-done').value === 'true';
 
             const response = await axios.post(
-                "http://localhost:3000/add-todo",
+                `${BASE_URL}/add-todo`,
                 {
-                    title: document.getElementById('todo-title').value, // Extract value
+                    title: document.getElementById('todo-title').value,
                     done: doneValue
                 },
                 {
@@ -143,41 +142,25 @@
 
         async function showTodo() {
             const response = await axios.post(
-                "http://localhost:3000/show-todo",
-                {}, // Empty data object for POST
+                `${BASE_URL}/show-todo`,
+                {},
                 {
                     headers: {
                         token: localStorage.getItem('token')
                     }
                 }
-            )
-            
-            document.getElementById("response-section").innerHTML = ""; // Clearing the Previous Content!
-            document.getElementById("response-section").innerHTML = `
-                <h1>${response.data.username}'s Todo List</h1>
-                <hr></hr>
-            `;
-            
+            );
+
+            document.getElementById("response-section").innerHTML = `<h1>${response.data.username}'s Todo List</h1><hr>`;
             response.data.todoData.forEach(todo => {
-
-                // Create a new div for each todo item
                 const todoDiv = document.createElement("div");
-                todoDiv.classList.add("todo-item"); // Add a class for styling
-
-                // Add the title and done status
+                todoDiv.classList.add("todo-item");
                 todoDiv.innerHTML = `
-
                     <h2>Title: ${todo.title}</h2>
                     <h3>Done: ${todo.done ? "Yes" : "No"}</h3>
-                    
-                    <br></br>
-                    <hr></hr>
-                `;
-
-                // Append the todo item to the response section
+                    <hr>`;
                 document.getElementById("response-section").appendChild(todoDiv);
             });
-
         }
     </script>
 </body>
